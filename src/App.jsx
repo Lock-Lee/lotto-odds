@@ -1,5 +1,6 @@
-import { useState, useMemo } from 'react';
-import { DRAWS, N, pad, freq2, repeatTest, backtest, checkNumber } from './logic.js';
+import { useState, useMemo, useEffect } from 'react';
+import { DRAWS, N, pad, freq2, repeatTest, backtest, checkNumber, addDraws } from './logic.js';
+import { loadUpdates } from './update.js';
 
 const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const thDate = iso => { const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y + 543}`; };
@@ -201,14 +202,28 @@ function PickTab() {
 }
 
 const TABS = [['check', 'เช็กเลข', CheckTab], ['pick', 'เลือกเลข', PickTab], ['odds', 'โอกาส', OddsTab], ['stats', 'สถิติ', StatsTab], ['history', 'ย้อนหลัง', HistoryTab]];
+const STATUS_TEXT = {
+  checking: 'กำลังตรวจหางวดใหม่',
+  current: 'ตรวจแล้ว ไม่มีงวดใหม่กว่านี้',
+  offline: 'ตรวจหางวดใหม่ไม่สำเร็จ กำลังใช้ข้อมูลที่มีอยู่ในแอป',
+};
 function App() {
   const [tab, setTab] = useState('check');
+  const [version, setVersion] = useState(0);      // เปลี่ยนเมื่อมีงวดใหม่ เพื่อให้ทุกหน้าคำนวณใหม่
+  const [status, setStatus] = useState('checking');
+  useEffect(() => {
+    let alive = true;
+    loadUpdates(DRAWS[N - 1].date, lines => { if (alive && addDraws(lines)) setVersion(v => v + 1); })
+      .then(s => alive && setStatus(s));
+    return () => { alive = false; };
+  }, []);
   const Current = TABS.find(t => t[0] === tab)[2];
   return <>
     <header><h1>เช็กโอกาสหวย</h1></header>
-    <main><Current /></main>
+    <main><Current key={version} /></main>
     <footer>
       <p>ข้อมูล {N} งวด ถึงงวด {thDate(DRAWS[N - 1].date)}</p>
+      <p aria-live="polite">{STATUS_TEXT[status]}</p>
       <p>ข้อมูลรวบรวมจากแหล่งภายนอก ไม่ใช่เอกสารทางการของสำนักงานสลากกินแบ่งรัฐบาล แอปนี้ไม่ได้ทำนายเลข</p>
     </footer>
     <nav aria-label="เมนูหลัก"><div>

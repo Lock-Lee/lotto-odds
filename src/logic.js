@@ -1,12 +1,23 @@
 import { RAW } from './data.js';
 
 // ---------- สถิติ ----------
-export const DRAWS = RAW.map(s => {
+const parse = s => {
   const [date, first, two, f3, l3] = s.split('|');
   const chunk = t => t ? t.match(/.{3}/g) : [];
   return { date, first, two, front3: chunk(f3), last3: chunk(l3), top3: first.slice(3), top2: first.slice(4) };
-});
-export const N = DRAWS.length;
+};
+// DRAWS และ N เปลี่ยนค่าได้เมื่อมีงวดใหม่เข้ามา (ดู addDraws)
+export let DRAWS = RAW.map(parse);
+export let N = DRAWS.length;
+// เพิ่มงวดใหม่จากบรรทัดรูปแบบเดียวกับ data.js คืนจำนวนงวดที่เพิ่มจริง
+export function addDraws(lines) {
+  const have = new Set(DRAWS.map(d => d.date));
+  const add = lines.map(parse).filter(d => !have.has(d.date));
+  if (!add.length) return 0;
+  DRAWS = [...DRAWS, ...add].sort((a, b) => (a.date < b.date ? -1 : 1));
+  N = DRAWS.length;
+  return add.length;
+}
 export const pad = (n, w) => String(n).padStart(w, '0');
 
 function lnGamma(x) {
