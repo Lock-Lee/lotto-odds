@@ -201,14 +201,16 @@ function PickTab() {
   </>;
 }
 
-const TABS = [['check', 'เช็กเลข', CheckTab], ['pick', 'เลือกเลข', PickTab], ['odds', 'โอกาส', OddsTab], ['stats', 'สถิติ', StatsTab], ['history', 'ย้อนหลัง', HistoryTab]];
+const ALL_TABS = [['check', 'เช็กเลข', CheckTab], ['pick', 'เลือกเลข', PickTab], ['odds', 'โอกาส', OddsTab], ['stats', 'สถิติ', StatsTab], ['history', 'ย้อนหลัง', HistoryTab]];
+const HIDDEN_TABS = ['check', 'pick', 'odds'];  // ซ่อนไว้ชั่วคราว ลบออกจากรายการนี้เพื่อแสดงอีกครั้ง
+const TABS = ALL_TABS.filter(t => !HIDDEN_TABS.includes(t[0]));
 const STATUS_TEXT = {
   checking: 'กำลังตรวจหางวดใหม่',
   current: 'ตรวจแล้ว ไม่มีงวดใหม่กว่านี้',
   offline: 'ตรวจหางวดใหม่ไม่สำเร็จ กำลังใช้ข้อมูลที่มีอยู่ในแอป',
 };
 function App() {
-  const [tab, setTab] = useState('check');
+  const [tab, setTab] = useState(TABS[0][0]);
   const [version, setVersion] = useState(0);      // เปลี่ยนเมื่อมีงวดใหม่ เพื่อให้ทุกหน้าคำนวณใหม่
   const [status, setStatus] = useState('checking');
   useEffect(() => {
