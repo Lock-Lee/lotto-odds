@@ -14,6 +14,8 @@ npm run dev      # เปิด http://localhost:5173
 npm run build    # ได้ไฟล์พร้อมอัปโหลดในโฟลเดอร์ dist/
 ```
 
+ตอน build จะ prerender หน้าแรกเป็น HTML พร้อม JSON-LD, `robots.txt` และ `llms.txt` ให้เครื่องมือค้นหาและผู้ช่วย AI อ่านได้ ถ้าตั้ง `SITE_URL` จะได้ canonical และ `sitemap.xml` ด้วย เช่น `SITE_URL=https://example.com/ npm run build`
+
 ## โครงสร้าง
 
 | ไฟล์ | หน้าที่ |
@@ -43,3 +45,34 @@ npm run build    # ได้ไฟล์พร้อมอัปโหลดใ�
 ## ที่มาของข้อมูล
 
 ชุดข้อมูล [thai-lotto-archive](https://github.com/vicha-w/thai-lotto-archive) ซึ่งรวบรวมจาก sanook.com และ kapook.com งวด ม.ค. 2564 – ต.ค. 2569 เทียบกับ lottery.co.th แล้วตรงกัน งวดก่อนหน้านั้นส่วนใหญ่อ้างอิงจากชุดข้อมูลแหล่งเดียว ไม่ใช่เอกสารทางการของสำนักงานสลากกินแบ่งรัฐบาล
+
+## ตัวนับคนเข้าเว็บและคนออนไลน์
+
+โค้ดอยู่ในโฟลเดอร์ `counter/` เป็น Cloudflare Worker ที่ใช้ Durable Object เก็บยอดรวมและยอดรายวัน (ตามเวลาไทย) ไม่บันทึก IP และไม่ใช้คุกกี้
+
+- **ยอดเข้าชม** นับ 1 ครั้งต่อการเปิดแท็บ (ปิดแท็บแล้วเปิดใหม่นับใหม่) ไม่ใช่จำนวนคนไม่ซ้ำ
+- **ออนไลน์** คือแท็บที่เปิดดูอยู่และส่ง ping มาภายใน 2.5 นาทีล่าสุด แท็บที่ซ่อนอยู่ไม่นับ
+
+ติดตั้งครั้งแรก (ต้องมีบัญชี Cloudflare)
+
+```bash
+cd counter && npm install
+npx wrangler login
+npm run deploy        # ได้ URL เช่น https://lotto-odds-counter.<ชื่อบัญชี>.workers.dev
+```
+
+แล้ว build เว็บโดยใส่ URL นั้น ถ้าไม่ใส่ เว็บจะไม่แสดงตัวนับ
+
+```bash
+VITE_COUNTER_URL=https://lotto-odds-counter.<ชื่อบัญชี>.workers.dev npm run build
+```
+
+ดูยอดย้อนหลังรายวัน (90 วันล่าสุด) ได้ที่ `<URL ตัวนับ>/stats`
+
+## Deploy บน Vercel
+
+1. Import repo นี้ใน Vercel ระบบจะใช้ค่าจาก `vercel.json` (build ด้วย `npm run build` แล้วเอาไฟล์จาก `dist/`)
+2. ใส่ Environment Variable `VITE_COUNTER_URL` เป็น URL ของตัวนับใน `counter/` ถ้าไม่ใส่ เว็บจะไม่แสดงตัวนับ
+3. ไม่ต้องตั้ง `SITE_URL` เพราะ build จะใช้โดเมน production ของโปรเจกต์ให้เอง (ถ้ามีโดเมนของตัวเอง ก็ใช้โดเมนนั้น)
+
+ตัวนับไม่ได้ deploy ไปกับ Vercel ต้อง deploy แยกบน Cloudflare ตามหัวข้อด้านบน

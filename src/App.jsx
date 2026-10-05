@@ -1,6 +1,8 @@
 import { useState, useMemo, useEffect } from 'react';
 import { DRAWS, N, pad, freq2, repeatTest, backtest, checkNumber, addDraws } from './logic.js';
 import { loadUpdates } from './update.js';
+import { FAQ } from './faq.js';
+import { trackVisitors } from './visitors.js';
 
 const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
 const thDate = iso => { const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y + 543}`; };
@@ -213,6 +215,8 @@ function App() {
   const [tab, setTab] = useState(TABS[0][0]);
   const [version, setVersion] = useState(0);      // เปลี่ยนเมื่อมีงวดใหม่ เพื่อให้ทุกหน้าคำนวณใหม่
   const [status, setStatus] = useState('checking');
+  const [visitors, setVisitors] = useState(null);
+  useEffect(() => trackVisitors(setVisitors), []);
   useEffect(() => {
     let alive = true;
     loadUpdates(DRAWS[N - 1].date, lines => { if (alive && addDraws(lines)) setVersion(v => v + 1); })
@@ -223,10 +227,16 @@ function App() {
   return <>
     <header><h1>เช็กโอกาสหวย</h1></header>
     <main><Current key={version} /></main>
+    <section className="faq" aria-labelledby="faq-h">
+      <h2 id="faq-h">คำถามที่พบบ่อย</h2>
+      {FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
+    </section>
     <footer>
       <p>ข้อมูล {N} งวด ถึงงวด {thDate(DRAWS[N - 1].date)}</p>
       <p aria-live="polite">{STATUS_TEXT[status]}</p>
+      {visitors && <p>เข้าชมแล้ว {fmt(visitors.total)} ครั้ง · ออนไลน์ตอนนี้ {fmt(visitors.online)} คน</p>}
       <p>ข้อมูลรวบรวมจากแหล่งภายนอก ไม่ใช่เอกสารทางการของสำนักงานสลากกินแบ่งรัฐบาล แอปนี้ไม่ได้ทำนายเลข</p>
+      <p>แอปนี้ไม่เก็บข้อมูลส่วนบุคคลและไม่ใช้คุกกี้ เก็บเฉพาะผลรางวัลไว้ในเบราว์เซอร์ของคุณเพื่อให้โหลดเร็วขึ้น ระหว่างใช้งาน เบราว์เซอร์จะเชื่อมต่อ Google Fonts และ GitHub เพื่อโหลดฟอนต์และผลรางวัลงวดใหม่ และส่งรหัสสุ่มของแท็บไปที่ตัวนับบน Cloudflare เพื่อนับยอดเข้าชมและคนออนไลน์ โดยไม่บันทึก IP</p>
     </footer>
     <nav aria-label="เมนูหลัก"><div>
       {TABS.map(([id, label]) => (

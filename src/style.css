@@ -86,6 +86,10 @@ nav{position:fixed;left:0;right:0;bottom:0;background:var(--nav);padding-bottom:
 nav div{max-width:520px;margin:0 auto;display:flex}
 nav button{flex:1;border:0;background:none;color:#C9D0E6;padding:14px 2px 13px;font-size:.86rem;border-top:3px solid transparent}
 nav button[aria-current="page"]{color:#fff;font-weight:600;border-top-color:#F3D9DC}
+.faq{max-width:520px;margin:0 auto;padding:0 16px}
+.faq details{border-bottom:1px solid var(--line)}
+.faq summary{cursor:pointer;padding:10px 0;font-weight:500}
+.faq details p{padding:0 0 12px;color:var(--ink-soft);font-size:.93rem}
 footer{max-width:520px;margin:28px auto 0;padding:0 16px;font-size:.8rem;color:var(--ink-soft)}
 
 .picker .seg{margin:0 0 14px}
