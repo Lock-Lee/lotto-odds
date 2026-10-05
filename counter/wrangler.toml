@@ -4,7 +4,7 @@ compatibility_date = "2025-09-01"
 
 # ใส่โดเมนของเว็บเพื่อจำกัดว่าใครเรียก API นี้จากเบราว์เซอร์ได้ ว่างไว้ = ทุกโดเมน
 [vars]
-ALLOWED_ORIGIN = ""
+ALLOWED_ORIGIN = "https://lotto-odds.vercel.app"
 
 [[durable_objects.bindings]]
 name = "COUNTER"
