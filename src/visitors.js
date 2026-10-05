@@ -5,6 +5,8 @@ const SID_KEY = 'lotto-sid';
 const COUNTED_KEY = 'lotto-counted';
 const EVERY_MS = 60_000;
 
+export const COUNTER_ON = Boolean(BASE);
+
 export function trackVisitors(onStats) {
   if (!BASE) return () => {};
   const store = (k, v) => { try { return v === undefined ? sessionStorage.getItem(k) : sessionStorage.setItem(k, v); } catch (e) { return null; } };

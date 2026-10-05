@@ -19,13 +19,14 @@ export class Counter extends DurableObject {
   async ping(id, visit) {
     const now = Date.now();
     this.seen.set(id, now);
+    const key = 'day:' + bangkokDay(now);
     let total = (await this.ctx.storage.get('total')) ?? 0;
+    let today = (await this.ctx.storage.get(key)) ?? 0;
     if (visit) {
-      const key = 'day:' + bangkokDay(now);
-      total++;
-      await this.ctx.storage.put({ total, [key]: ((await this.ctx.storage.get(key)) ?? 0) + 1 });
+      total++; today++;
+      await this.ctx.storage.put({ total, [key]: today });
     }
-    return { total, online: this.online(now) };
+    return { total, today, online: this.online(now) };
   }
   leave(id) { this.seen.delete(id); }
   async stats() {

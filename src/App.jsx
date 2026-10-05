@@ -2,11 +2,9 @@ import { useState, useMemo, useEffect } from 'react';
 import { DRAWS, N, pad, freq2, repeatTest, backtest, checkNumber, addDraws } from './logic.js';
 import { loadUpdates } from './update.js';
 import { FAQ } from './faq.js';
-import { trackVisitors } from './visitors.js';
+import { thDate, fmt, DrawCard, Visitors } from './shared.jsx';
+import { trackVisitors, COUNTER_ON } from './visitors.js';
 
-const MONTHS = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-const thDate = iso => { const [y, m, d] = iso.split('-').map(Number); return `${d} ${MONTHS[m - 1]} ${y + 543}`; };
-const fmt = n => Math.round(n).toLocaleString('th-TH');
 const KEYNAME = { two: 'เลขท้าย 2 ตัว', top2: '2 ตัวบน' };
 
 function CheckTab() {
@@ -24,7 +22,7 @@ function CheckTab() {
   return (
     <div className="ticket">
       <div className="ticket-top">
-        <label htmlFor="numInput">กรอกเลข 2 หรือ 3 ตัวที่อยากเช็ก</label>
+        <label htmlFor="numInput">กรอกเลข 2 หรือ 3 ตัวที่อยากเช็ค</label>
         <div className="cells">
           {[0, 1, 2].map(i => (
             <div key={i} className={'cell' + (v[i] == null ? ' empty' : '') + (focused && i === Math.min(v.length, 2) ? ' cursor' : '')}>{v[i] ?? '–'}</div>
@@ -144,15 +142,7 @@ function HistoryTab() {
         <option value="all">ทุกปี</option>{years.map(y => <option key={y} value={y}>{y}</option>)}
       </select></label>
     </div>
-    {list.slice(0, shown).map(d => (
-      <div className="draw" key={d.date}>
-        <div className="d">งวด {thDate(d.date)}</div><div className="f">{d.first}</div><div className="d">รางวัลที่ 1</div>
-        <div className="o">
-          {d.front3.length > 0 && <>หน้า 3 ตัว <b>{d.front3.join(' ')}</b>{'  '}</>}
-          ท้าย 3 ตัว <b>{d.last3.join(' ')}</b>{'  '}ท้าย 2 ตัว <b>{d.two}</b>
-        </div>
-      </div>
-    ))}
+    {list.slice(0, shown).map(d => <DrawCard key={d.date} d={d} />)}
     {shown < list.length && <button className="btn ghost" type="button" onClick={() => setShown(shown + 30)}>ดูเพิ่มอีก 30 งวด</button>}
   </>;
 }
@@ -203,7 +193,7 @@ function PickTab() {
   </>;
 }
 
-const ALL_TABS = [['check', 'เช็กเลข', CheckTab], ['pick', 'เลือกเลข', PickTab], ['odds', 'โอกาส', OddsTab], ['stats', 'สถิติ', StatsTab], ['history', 'ย้อนหลัง', HistoryTab]];
+const ALL_TABS = [['check', 'เช็คเลข', CheckTab], ['pick', 'เลือกเลข', PickTab], ['odds', 'โอกาส', OddsTab], ['stats', 'สถิติ', StatsTab], ['history', 'ย้อนหลัง', HistoryTab]];
 const HIDDEN_TABS = ['check', 'pick', 'odds'];  // ซ่อนไว้ชั่วคราว ลบออกจากรายการนี้เพื่อแสดงอีกครั้ง
 const TABS = ALL_TABS.filter(t => !HIDDEN_TABS.includes(t[0]));
 const STATUS_TEXT = {
@@ -225,8 +215,16 @@ function App() {
   }, []);
   const Current = TABS.find(t => t[0] === tab)[2];
   return <>
-    <header><h1>เช็กโอกาสหวย</h1></header>
+    <header><h1>เช็คโอกาสหวย</h1>{COUNTER_ON && <Visitors v={visitors} />}</header>
     <main><Current key={version} /></main>
+    <section className="more" aria-labelledby="more-h">
+      <h2 id="more-h">ดูเพิ่มเติม</h2>
+      <ul>
+        <li><a href="/results/">ผลหวยย้อนหลังทุกงวด ตั้งแต่ปี 2550</a></li>
+        <li><a href="/numbers/">เลขท้าย 2 ตัว 00–99 ออกกี่ครั้ง</a></li>
+        <li><a href="/odds/">โอกาสถูกหวยแต่ละรางวัล และเงินที่ได้คืนเฉลี่ย</a></li>
+      </ul>
+    </section>
     <section className="faq" aria-labelledby="faq-h">
       <h2 id="faq-h">คำถามที่พบบ่อย</h2>
       {FAQ.map(([q, a]) => <details key={q}><summary>{q}</summary><p>{a}</p></details>)}
@@ -234,7 +232,6 @@ function App() {
     <footer>
       <p>ข้อมูล {N} งวด ถึงงวด {thDate(DRAWS[N - 1].date)}</p>
       <p aria-live="polite">{STATUS_TEXT[status]}</p>
-      {visitors && <p>เข้าชมแล้ว {fmt(visitors.total)} ครั้ง · ออนไลน์ตอนนี้ {fmt(visitors.online)} คน</p>}
       <p>ข้อมูลรวบรวมจากแหล่งภายนอก ไม่ใช่เอกสารทางการของสำนักงานสลากกินแบ่งรัฐบาล แอปนี้ไม่ได้ทำนายเลข</p>
       <p>แอปนี้ไม่เก็บข้อมูลส่วนบุคคลและไม่ใช้คุกกี้ เก็บเฉพาะผลรางวัลไว้ในเบราว์เซอร์ของคุณเพื่อให้โหลดเร็วขึ้น ระหว่างใช้งาน เบราว์เซอร์จะเชื่อมต่อ Google Fonts และ GitHub เพื่อโหลดฟอนต์และผลรางวัลงวดใหม่ และส่งรหัสสุ่มของแท็บไปที่ตัวนับบน Cloudflare เพื่อนับยอดเข้าชมและคนออนไลน์ โดยไม่บันทึก IP</p>
     </footer>

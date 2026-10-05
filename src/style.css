@@ -20,6 +20,13 @@ main{max-width:520px;margin:0 auto;padding:0 16px}
 h1,h2,h3,p{margin:0}
 header{max-width:520px;margin:0 auto;padding:18px 16px 10px}
 header h1{font-size:1.25rem;font-weight:600}
+.visitors{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0 0}
+.visitors div{background:var(--card);border:1px solid var(--line);border-radius:6px;padding:8px 10px;min-width:0}
+.visitors dt{font-size:.75rem;color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.visitors dd{margin:2px 0 0;font-family:var(--num);font-weight:700;font-size:1.15rem;font-variant-numeric:tabular-nums}
+.visitors .dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#2E9E5B;margin-right:5px;vertical-align:1px;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.35}}
+@media (prefers-reduced-motion: reduce){.visitors .dot{animation:none}}
 h2{font-size:1.05rem;font-weight:600;margin:26px 0 8px}
 main>h2:first-child{margin-top:8px}
 .lead{color:var(--ink-soft);font-size:.93rem}
@@ -104,3 +111,22 @@ footer{max-width:520px;margin:28px auto 0;padding:0 16px;font-size:.8rem;color:v
 .pickset li b{display:block;font-family:var(--num);font-size:1.4rem;line-height:1.2}
 .pickset li span{display:block;font-size:.7rem;color:var(--ink-soft);line-height:1.3}
 .pickset p{font-size:.88rem;color:var(--ink-soft)}
+.brand{font-size:1.1rem;font-weight:600;color:var(--ink);text-decoration:none}
+a{color:var(--ink)}
+main h1{font-size:1.3rem;font-weight:600;margin:8px 0 6px}
+main p{margin-top:8px}
+.crumbs ol{list-style:none;margin:0 auto;padding:0 16px 4px;max-width:520px;display:flex;flex-wrap:wrap;gap:4px;font-size:.82rem;color:var(--ink-soft)}
+.crumbs{position:static;background:none;padding:0}
+.crumbs li+li::before{content:"›";margin-right:4px}
+.crumbs a{color:var(--ink-soft)}
+.chips,.numgrid,.more ul{list-style:none;padding:0;margin:8px 0 0}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips a,.pill{display:inline-block;border:1.5px solid var(--ink);border-radius:4px;padding:4px 10px;background:var(--card);text-decoration:none;font-family:var(--num);margin:0 6px 6px 0}
+.numgrid{display:grid;grid-template-columns:repeat(5,1fr);gap:4px}
+.numgrid a{display:block;text-align:center;border:1px solid var(--line);border-radius:4px;padding:6px 2px;background:var(--card);text-decoration:none}
+.numgrid b{display:block;font-family:var(--num);font-size:1.05rem}
+.numgrid span{font-size:.72rem;color:var(--ink-soft)}
+.pager{display:flex;justify-content:space-between;margin-top:16px}
+.more{max-width:520px;margin:0 auto;padding:0 16px}
+.more li{padding:6px 0;border-bottom:1px solid var(--line)}
+.sub{display:block;font-size:.78rem;color:var(--ink-soft)}
