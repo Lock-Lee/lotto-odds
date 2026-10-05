@@ -5,7 +5,7 @@
   "outputDirectory": "dist",
   "rewrites": [
     {
-      "source": "/stats",
+      "source": "/stats/",
       "destination": "https://lotto-odds-counter.locklee-dev.workers.dev/stats"
     }
   ],

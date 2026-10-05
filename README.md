@@ -70,7 +70,7 @@ npm run deploy        # ได้ URL เช่น https://lotto-odds-counter.<�
 VITE_COUNTER_URL=https://lotto-odds-counter.<ชื่อบัญชี>.workers.dev npm run build
 ```
 
-ดูยอดย้อนหลังรายวัน (90 วันล่าสุด) ได้ที่ https://lotto-odds.vercel.app/stats (`vercel.json` ส่งต่อไปที่ตัวนับ)
+ดูยอดย้อนหลังรายวัน (90 วันล่าสุด) ได้ที่ https://lotto-odds.vercel.app/stats/ (`vercel.json` ส่งต่อไปที่ตัวนับ)
 
 ## Deploy บน Vercel
 
